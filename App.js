@@ -2,12 +2,13 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeScreen from "./screens/Home";
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
 import TopUpScreen from "./screens/TopupScreen";
 import TransferScreen from "./screens/TransferScreen";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import Tnc from "./modal/TnC";
 
 const Stack = createStackNavigator();

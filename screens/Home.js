@@ -17,12 +17,16 @@ import ProfileAccount from "../components/ProfileAccount";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { fetchPosts } from "../api/restApi";
+import { fetchTransaction } from "../api/restApi";
+import { getUser } from "../api/restApi";
 
 export default function Home() {
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [profile, setProfile] = useState({})
 
   // useEffect(() => {
   //   const getPosts = async () => {
@@ -37,31 +41,63 @@ export default function Home() {
   //   };
   //   getPosts();
   // }, []);
+  const getProfile = async () => {
+    try {
+      const data = await getUser();
+      console.log("DATA USER (useeffect) -->", data); // Log to verify data
+      setProfile(data);
+      console.log('profile parent', profile)
+    } catch (err) {
+      console.error("Error fetching transactions:", err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getTransactions = async () => {
+    try {
+      const data = await fetchTransaction();
+      // console.log("Data transactions (useeffect) -->", data); // Log to verify data
+      setTransactions(data);
+      // console.log('transaction parent', transactions)
+    } catch (err) {
+      console.error("Error fetching transactions:", err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // if (loading) {
-  //   return (
-  //     <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-  //   );
-  // }
+    useEffect(() => {
+      getTransactions();
+      getProfile();
+     
+    }, []);
 
-  // if (error) {
-  //   return (
-  //     <View style={styles.errorContainer}>
-  //       <Text style={styles.errorText}>{error}</Text>
-  //     </View>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView>
       <ScrollView>
         <View style={[styles.container, { backgroundColor: "#FAFBFD" }]}>
-          <ProfileAccount />
-          <GreetingCard />
-          <AccountCard />
-          <Balance />
+          <ProfileAccount profileChild={profile}/>
+          <GreetingCard greetingChild={profile}/>
+          <AccountCard accountChild={profile}/>
+          <Balance balanceChild={profile}/>
           <View style={{ width: "100%" }}>
-            <TransactionList />
+            <TransactionList transactionsChild={transactions} />
           </View>
         </View>
       </ScrollView>

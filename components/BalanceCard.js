@@ -8,8 +8,9 @@ const eyeClosed = require("../assets/eye-closed.png");
 const plus = require("../assets/plus.png");
 const send = require("../assets/send.png");
 
-const Balance = () => {
+const Balance = (balanceChild) => {
   const navigation = useNavigation();
+  console.log("INI BALANCE", balanceChild.balanceChild)
   const [isEyesOpen, setisEyesOpen] = useState(true); 
 
   const toggleBalance = () => {
@@ -48,7 +49,7 @@ const Balance = () => {
           <Text
             style={[styles.plainText, { fontWeight: "600", fontSize: 30 }]}
           >
-            {isEyesOpen ? "Rp. 10.000.000" : "***************"}
+            {isEyesOpen ? `Rp ${Intl.NumberFormat("id-ID").format(balanceChild.balanceChild.balance)}` : "***************"}
           </Text>
 
           {/* Eye */}

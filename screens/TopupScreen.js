@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Alert
+  Alert,
 } from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
-import { createTopup } from "../api/restApi";
+import { createTopup, getUser } from "../api/restApi";
 
 const TopupScreen = () => {
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [selected, setSelected] = useState("");
+  const [profile, setProfile] = useState({});
 
   const paymentMethod = [
     { key: "1", value: "BYOND pay" },
@@ -22,11 +23,25 @@ const TopupScreen = () => {
     { key: "4", value: "ShopeePay" },
   ];
 
+  const getProfile = async () => {
+    try {
+      const data = await getUser();
+      console.log("DATA USER (useeffect) -->", data); // Log to verify data
+      setProfile(data);
+      console.log("profile parent", profile);
+    } catch (err) {
+      console.error("Error fetching transactions:", err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async () => {
-    // if (!amount || !selected) {
-    //   Alert.alert("Error", "Please fill in all fields.");
-    //   return;
-    // }
+    if (!amount || !selected) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
 
     try {
       const response = await createTopup(amount);
@@ -36,13 +51,15 @@ const TopupScreen = () => {
         console.log("masuk-try", amount);
         setAmount("");
         setNote("");
-        setSelected("");
       }
     } catch (error) {
-      Alert.alert("Uh-oh! 😢", "Failed to create top-up: " + error.message);
+      Alert.alert("Uh-oh! 😢", "Failed to top-up: " + error.message);
     }
   };
 
+  useEffect(() => {
+    getProfile();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -63,7 +80,7 @@ const TopupScreen = () => {
               onChangeText={setAmount}
             />
           </View>
-          <Text style={styles.balanceText}>Balance: IDR 10.000.000</Text>
+          <Text style={styles.balanceText}>Balance: Rp{Intl.NumberFormat("id-ID").format(profile.balance)}</Text>
         </View>
 
         <SelectList
@@ -71,9 +88,9 @@ const TopupScreen = () => {
           data={paymentMethod}
           save="value"
           placeholder="Payment Method"
-          boxStyles={styles.boxStyles} 
-          inputStyles={styles.inputStyles} 
-          dropdownStyles={styles.dropdownStyles} 
+          boxStyles={styles.boxStyles}
+          inputStyles={styles.inputStyles}
+          dropdownStyles={styles.dropdownStyles}
           dropdownItemStyles={styles.dropdownItemStyles} // Each dropdown item
           dropdownTextStyles={styles.dropdownTextStyles} // Text for options
         />
@@ -182,7 +199,7 @@ const styles = StyleSheet.create({
     height: 60,
     // justifyContent: "center",
     borderBottomColor: "#E0E0E0",
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 0,
     marginVertical: 30,
   },

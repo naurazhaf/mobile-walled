@@ -1,15 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
+
+import { createTransfer, getUser } from "../api/restApi";
 
 const TransferScreen = () => {
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
+  const [profile, setProfile] = useState({});
+
+  const getProfile = async () => {
+    try {
+      const data = await getUser();
+      console.log("DATA USER (useeffect) -->", data); // Log to verify data
+      setProfile(data);
+      console.log("profile parent", profile);
+    } catch (err) {
+      console.error("Error fetching transactions:", err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+  const handleSubmit = async () => {
+    // if (!amount || !selected) {
+    //   Alert.alert("Error", "Please fill in all fields.");
+    //   return;
+    // }
+    Alert.alert("handlesubmit", "Transfer was successful!");
+
+    try {
+      const response = await createTransfer(amount);
+      console.log("masuk-try");
+      if (response) {
+        Alert.alert("Success", "Transfer was successful!");
+        console.log("masuk-try", amount);
+        setAmount("");
+        setNote("");
+      }
+    } catch (error) {
+      Alert.alert("Uh-oh! 😢", "Failed to transfer: " + error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -36,7 +79,9 @@ const TransferScreen = () => {
               onChangeText={setAmount}
             />
           </View>
-          <Text style={styles.balanceText}>Balance: IDR 10.000.000</Text>
+          <Text style={styles.balanceText}>
+            Balance: Rp{Intl.NumberFormat("id-ID").format(profile.balance)}
+          </Text>
         </View>
 
         {/* NOTES */}
@@ -52,12 +97,11 @@ const TransferScreen = () => {
       </View>
       <View>
         {/* TRAsnFER */}
-        <TouchableOpacity style={styles.transferButton}>
+        <TouchableOpacity style={styles.transferButton} onPress={handleSubmit}>
           <Text style={styles.transferButtonText}>Transfer</Text>
         </TouchableOpacity>
       </View>
     </View>
-    
   );
 };
 
@@ -77,7 +121,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
     // flexDirection: 'row'
   },
   receiverInfo: {

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import styles from "../style/styles";
 
-const AccountCard = () => {
+const AccountCard = (accountChild) => {
   return (
     <View
       style={[
@@ -21,7 +21,7 @@ const AccountCard = () => {
       ]}
     >
       <Text style={[styles.whiteText,  { fontSize: 20 }]}>Account No.</Text>
-      <Text style={[styles.whiteText, { fontWeight: 700, fontSize: 20  }]}>10089</Text>
+      <Text style={[styles.whiteText, { fontWeight: 700, fontSize: 20  }]}>{accountChild.accountChild.account_no}</Text>
     </View>
   );
 };

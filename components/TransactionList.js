@@ -9,47 +9,18 @@ import {
 import { fetchTransaction } from "../api/restApi";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const TransactionTable = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const getTransactions = async () => {
-      try {
-        const data = await fetchTransaction();
-        console.log("Data respons (useeffect) -->", data); // Log to verify data
-        setTransactions(data);
-      } catch (err) {
-        console.error("Error fetching transactions:", err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getTransactions();
-  }, []);
-
-  if (loading) {
-    return (
-      <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error: {error}</Text>
-      </View>
-    );
-  }
+const TransactionTable = ({ transactionsChild }) => {
+  // const [transactions, setTransactions] = useState([]);
+  console.log('transaction child', transactionsChild)
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
 
   return (
     <SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.title}>Transaction History</Text>
         <View style={styles.table}>
-          {transactions.map((item) => (
+          {transactionsChild.map((item) => (
             <View style={styles.row} key={item.id || Math.random()}>
               <View style={styles.cell}>
                 <Text style={styles.name}>

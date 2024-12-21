@@ -93,7 +93,7 @@ export const fetchUser = async () => {
 export const fetchTransaction = async () => {
   try {
     const token = await AsyncStorage.getItem('userToken');
-    console.log('TOKENN:', token);  
+    console.log('TOKEN TRANSACTION:', token);  
 
     if (!token) {
       throw new Error("Gaada Token");
@@ -105,7 +105,7 @@ export const fetchTransaction = async () => {
       },
     });
 
-    console.log("Data response API -->", response.data);
+    // console.log("Data response API -->", response.data);
 
     if (response.data && response.data.data) {
       return response.data.data;
@@ -118,35 +118,11 @@ export const fetchTransaction = async () => {
   }
 };
 
-export const createTopup2 = async (amount, description) => {
-  try {
-    const token = await AsyncStorage.getItem('userToken');
-    console.log('TOKENN:', token);  
-    if (!token) {
-      throw new Error("No token found. Please log in first.");
-    }
-
-    const body = {
-      type: "c",  // c--> topup
-      from_to: 12345,  
-      amount: amount,
-      description: description,
-    };
-
-    const response = await api.post("/transactions", body);
-
-    console.log("Berhasil topup", response.data);
-    return response.data.data;  
-  } catch (error) {
-    console.error("Gagal topup:", error.message);
-    throw new Error(error.response?.data?.message || "Failed to create top-up");
-  }
-};
 
 export const createTopup = async (amount) => {
   try {
     const token = await AsyncStorage.getItem('userToken');
-    console.log('TOKENN:', token);  
+    console.log('TOKEN USER:', token);  
     if (!token) {
       throw new Error("No token found. Please log in first.");
     }
@@ -172,8 +148,63 @@ export const createTopup = async (amount) => {
   }
 };
 
+export const createTransfer = async (amount) => {
+  try {
+    const token = await AsyncStorage.getItem('userToken');
+    console.log('TOKEN CREATET TF:', token);  
+    if (!token) {
+      throw new Error("No token found. Please log in first.");
+    }
+
+    const body = {
+      type: "d",  // d--> transfer
+      from_to: "12345",  
+      amount: amount,
+      // description: description,
+    };
+
+    const response = await api.post("/transactions", body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("Berhasil transfer", response.data);
+    return response.data.data;  
+  } catch (error) {
+    console.error("Gagal transfer:", error.message);
+    throw new Error(error.response?.data?.message || "Failed to create top-up");
+  }
+};
 
 
+export const getUser = async () => {
+  try {
+    const token = await AsyncStorage.getItem('userToken');
+    console.log('TOKEN USER:', token);  
+
+    if (!token) {
+      throw new Error("Gaada Token");
+    }
+
+    const response = await api.get('/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("DATA USER API -->", response.data);
+
+    if (response.data && response.data.data) {
+      return response.data.data;
+    } else {
+      throw new Error("Invalid API response format");
+    }
+  } catch (error) {
+    console.error("Fetch Transactions Error:", error.message);
+    throw new Error(error.response?.data?.message || "Failed to fetch transactions");
+  }
+};
 
 
 // export const fetchTransaction = async () => {
